@@ -21,8 +21,6 @@ Some features of UTP are:
 
 ## How?
 
-
-
 To use this package with Coherence, first see Coherence's own documentation on [Peer-to-peer](https://docs.coherence.io/hosting/client-hosting) titles, as well as the page on [Implementing Client-hosting](https://docs.coherence.io/hosting/client-hosting/implementing-client-hosting).  This package contains implementations of the  `IRelay`, and `IRelayConnection` interfaces for the hosting client, as well as the `ITransport`, `ITransportFactory` interfaces for non-hosting clients.  Both sides operate over a UTP NetworkDriver and NetworkPipeline.
 
 See the example project's `SampleClientAndHost.cs` C# file ([here](Assets/UtpForCoherenceSample/SampleClientAndHost.cs)) for an example of a client-hosted session that uses Unity's Lobby and Relay services for "Quick Match" matchmaking between NAT-protected peers.
@@ -38,6 +36,10 @@ Pass the `UtpRelay` instance in to CoherenceBridge.SetRelay.  Then create and st
 ### On the Connecting Client
 
 On peers that wish to connect to the hosting client create a `UtpTransportFactory`, again passing in a callback that will create and configure the NetworkDriver and pipeline.  Pass the factory in to `CoherenceBridge.SetTransport()` before calling `CoherenceBridge.Connect()`.  Your callback function will be called as part of the connection process.
+
+## Stabiliy
+
+This code is the result of my own curiousity.  It has not been tested beyond the very simplest setup.  Do not assume it is stable or tested in any way whatsoever.
 
 ## License
 
