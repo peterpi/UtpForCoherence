@@ -6,7 +6,7 @@
 		"email" : "peter.pimley@gmail.com"
 	},
 	"description" : "A plugin for Coherence that supplies implementations of ITransport, IRelay, etc. to route traffic via the Unity Transport package com.unity.transport.",
-	"version" : "0.1.0",
+	"version" : "0.2.0",
 	"dependencies" : {
 		"com.unity.transport" : "2.5.0",
 		"io.coherence.sdk" : "1.8.0",
