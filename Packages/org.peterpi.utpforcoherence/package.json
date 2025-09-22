@@ -1,0 +1,16 @@
+{
+	"name" : "org.peterpi.utpforcoherence",
+	"displayName" : "UTP for Coherence",
+	"author" : {
+		"name" : "Peter Pimley",
+		"email" : "peter.pimley@gmail.com"
+	},
+	"description" : "A plugin for Coherence that supplies implementations of ITransport, IRelay, etc. to route traffic via the Unity Transport package com.unity.transport.",
+	"version" : "0.1.0",
+	"dependencies" : {
+		"com.unity.transport" : "2.5.0",
+		"io.coherence.sdk" : "1.8.0",
+		"com.unity.collections" : "2.5.1"
+	}
+}
+

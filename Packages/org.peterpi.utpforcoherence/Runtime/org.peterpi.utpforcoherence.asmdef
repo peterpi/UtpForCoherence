@@ -1,0 +1,23 @@
+{
+    "name": "org.peterpi.utpforcoherence",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f2d49d9fa7e7eb3418e39723a7d3b92f",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:47450684110bc7845a39db4ddb54c84d",
+        "GUID:8fbe0f289693a7d4c8fa26cf3821c5a0",
+        "GUID:0a07ba59d8cdb4fafa9e1521f3186aac",
+        "GUID:68d469278aa33f94c8a6d8b8cdee11c3",
+        "GUID:b706f3459e13d400bad721320f4dc48f",
+        "GUID:6fca9c0eaa6a14b189136e4611780b56"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

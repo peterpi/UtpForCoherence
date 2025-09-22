@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 579f4a509fd2f994fa391c0c78ea3f11, type: 3}
+  m_Name: ConnectionPrefab
+  m_EditorClassIdentifier: 
+  id: e5b168e43d55a304c9944947281bb14d
+  selfId: a214fcf55cce80144944bf7e2b941dd1
+  editorTarget: {fileID: 4113369333850467900, guid: e5b168e43d55a304c9944947281bb14d, type: 3}
+  includeInSchema: 1
+  objectProvider:
+    rid: 4277878087311687950
+  objectInstantiator:
+    rid: 4277878087311687951
+  references:
+    version: 2
+    RefIds:
+    - rid: 4277878087311687950
+      type: {class: DirectReferenceProvider, ns: Coherence.Toolkit, asm: Coherence.Toolkit}
+      data:
+        prefab: {fileID: 4113369333850467900, guid: e5b168e43d55a304c9944947281bb14d, type: 3}
+    - rid: 4277878087311687951
+      type: {class: DefaultInstantiator, ns: Coherence.Toolkit, asm: Coherence.Toolkit}
+      data: 

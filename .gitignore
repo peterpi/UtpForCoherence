@@ -1,0 +1,13 @@
+Library
+Builds
+UIElementsSchema
+*.csproj
+*.csproj.user
+*.sln
+obj
+Temp
+Logs/
+UserSettings/
+obj/
+.vs
+.vsconfig

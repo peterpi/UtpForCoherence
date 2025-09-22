@@ -1,0 +1,28 @@
+{
+    "name": "UtpForCoherenceSample",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fe25561d224ed4743af4c60938a59d0b",
+        "GUID:5540e30183c82e84b954c033c388e06c",
+        "GUID:37e17ffe38d86ae48bc3207e83ffef88",
+        "GUID:f2d49d9fa7e7eb3418e39723a7d3b92f",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:ee1999ff30d5b4c34a4832b9af6201de",
+        "GUID:47450684110bc7845a39db4ddb54c84d",
+        "GUID:6fca9c0eaa6a14b189136e4611780b56",
+        "GUID:8fbe0f289693a7d4c8fa26cf3821c5a0",
+        "GUID:bae4adb0f90a77648852b3e162a31d20",
+        "GUID:b706f3459e13d400bad721320f4dc48f",
+        "GUID:680822a6322314ac0a3cfb274cf3d6bc",
+        "GUID:2c230be77e31790469eea772b074d63e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
