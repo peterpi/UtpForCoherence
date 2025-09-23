@@ -16,6 +16,7 @@ using Unity.Services.Relay.Models;
 using Unity.Services.Authentication;
 using System.Linq.Expressions;
 using System.Linq;
+using Newtonsoft.Json;
 
 public class SampleClientAndHost : MonoBehaviour
 {
@@ -31,6 +32,11 @@ public class SampleClientAndHost : MonoBehaviour
 	[SerializeField]
 	private VisualTreeAsset m_inGameMenu; // ... which consists of a single button "Quit".
 
+	[SerializeField]
+	private VisualTreeAsset m_searchResults;
+
+	[SerializeField]
+	private VisualTreeAsset m_searchResultRow;
 
 	private CoherenceBridge m_bridge;
 
@@ -78,7 +84,8 @@ public class SampleClientAndHost : MonoBehaviour
 		m_rootVE.Clear();
 		VisualElement hostAndJoin = m_hostOrJoin.Instantiate();
 		hostAndJoin.Q<Button>("host").clicked += DoHostSession;
-		hostAndJoin.Q<Button>("quickJoin").clicked += DoQuickJoinSession;
+		hostAndJoin.Q<Button>("quickJoin").clicked += () => DoClient();
+		hostAndJoin.Q<Button>("search").clicked += Search;
 		m_rootVE.Add(hostAndJoin);
 	}
 
@@ -234,7 +241,8 @@ public class SampleClientAndHost : MonoBehaviour
 		var options = new Unity.Services.Lobbies.CreateLobbyOptions()
 		{
 			Player = new(me),
-			Data = new() { { "RelayJoinCode", new(memberVisible, relayJoinCode) } }
+			Data = new() { { "RelayJoinCode", new(memberVisible, relayJoinCode) } },
+			IsPrivate = false,
 		};
 		string lobbyName = "x"; // This is unused in this example, but the Lobby service requires a non-empty string.
 		Unity.Services.Lobbies.Models.Lobby lobby = await lobbySrv.CreateLobbyAsync(lobbyName, maxPlayers, options);
@@ -244,7 +252,7 @@ public class SampleClientAndHost : MonoBehaviour
 	private async Task HostHeartbeatLobby (string lobbyId, CancellationToken cancel)
 	{
 		// Lobbies are considered "inactive" after 30 seconds of inactivity
-		// and will no longer appear in search results or quick-join.
+		// and will no longer appear in search response or quick-join.
 		//
 		// https://docs.unity.com/ugs/manual/lobby/manual/heartbeat-a-lobby
 		//
@@ -305,44 +313,42 @@ public class SampleClientAndHost : MonoBehaviour
 		}
 	}
 
-	private async void DoQuickJoinSession()
-	{
-		Debug.Log("Quick Join.");
 
-		// Like DoHostSession() above, we allow for cancellation by the user
-		// or by our own destruction.
+
+
+	// The common client functionality, shared between quick-join and manual join after searching.
+	private async void DoClient (string lobbyId = null)
+	{
+		var lobbySrv = Unity.Services.Lobbies.LobbyService.Instance;
 		using CancellationTokenSource userCancel = new();
 		using CancellationTokenSource combinedCancel = CancellationTokenSource.CreateLinkedTokenSource(userCancel.Token, m_destroyCancellation.Token);
 		CancellationToken cancel = combinedCancel.Token;
-		
-		var lobbySrv = Unity.Services.Lobbies.LobbyService.Instance;
+		SetupInGameMenu(userCancel);
 		Unity.Services.Lobbies.Models.Lobby lobby = null;
-
 		try
 		{
-			SetupInGameMenu(userCancel);
+			// If the caller provided a lobby id then join that lobby.
+			// Otherwise quick-join to join a random free one.
+			lobby = string.IsNullOrEmpty(lobbyId) ?
+				await lobbySrv.QuickJoinLobbyAsync() :
+				await lobbySrv.JoinLobbyByIdAsync(lobbyId);
+			cancel.ThrowIfCancellationRequested();
 
-			// Quick-Join a Lobby.
-			// If there are no lobbies to join then this will throw a Unity.Services.Lobbies.Http.HttpException
-			// with a not-found 404 status code.
-			lobby = await lobbySrv.QuickJoinLobbyAsync();
-
-			// Get the Relay join code from the Lobby's data.
+			// The lobby has the Relay join code as a member-visible data item:
 			bool hasJoinCode = lobby.Data.TryGetValue("RelayJoinCode", out var relayJoinDataObj);
 			if (!hasJoinCode)
 				throw new System.Exception($"Joined lobby {lobby.Id}, but it did not have a join code."); // This should never happen.
 			string joinCode = relayJoinDataObj.Value;
-			Debug.Log($"Quick-joined Lobby {lobby.Id}, which holds join code {joinCode}.  Joining relay.");
+			Debug.Log($"Joined Lobby {lobby.Id}, which holds join code {joinCode}.  Joining relay.");
 
 			// Join the Relay, using the join code.
 			var relaySrv = Unity.Services.Relay.RelayService.Instance;
 			Unity.Services.Relay.Models.JoinAllocation relayJoinAlloc = await relaySrv.JoinAllocationAsync(joinCode);
+			cancel.ThrowIfCancellationRequested();
 			var relayServerData = relayJoinAlloc.ToRelayServerData("udp");
 			Debug.Log($"Joined relay at {relayServerData.Endpoint} using join code {joinCode}.  Allocation is {relayJoinAlloc.AllocationId}.");
 
-
-			// Make a UtpTransportFactory that uses the NetworkDriver,
-			// and tell the CoherenceBridge to use that for future connections.
+			// Make a UtpTransportFactory and tell the CoherenceBridge to use that for future connections.
 			UtpTransport.DriverCreator createClientDriver = delegate (ref NetworkDriver driver, ref NetworkPipeline pipeline)
 			{
 				CreateDriverForUtpRelay(ref driver, ref pipeline, relayServerData);
@@ -355,26 +361,30 @@ public class SampleClientAndHost : MonoBehaviour
 			Coherence.Connection.EndpointData ep = RelayServerDataToCoherenceEndpoint(relayServerData);
 			m_bridge.Connect(ep);
 
-			// TODO: handle failed connection attempts.  Currently m_bridge.IsConnecting becomes false too early.
+			// Have we observed any frames where m_bridge.IsConnected is true?
+			bool hasBeenConnected = false;
 
-			// We're now in gameplay.  
 			while (!cancel.IsCancellationRequested)
+			{
+				// If we have previously been in a connected state and now we are not in a connected state
+				// then it means that the remote peer has disconnected us.
+				hasBeenConnected |= m_bridge.IsConnected;
+				if (hasBeenConnected && !m_bridge.IsConnected)
+					throw new System.Exception("Disconnected by remote host.");
 				await Task.Yield();
+			}
+			Debug.Log("Voluntary disconnect (user pressed button, or exited play mode).");
 		}
-		catch (System.Exception ex)
+		catch (System.Exception x)
 		{
-			// Log it now (so that error messages appear before cleanup) and re-throw.
-			Debug.Log(ex);
-			throw;
+			Debug.LogException(x);
 		}
 		finally
 		{
-			m_bridge.Disconnect();
+			m_bridge.Disconnect(); // Maybe it's disconnected already; that's OK.
 			m_bridge.SetTransportFactory(new DefaultTransportFactory()); // Back to normal.
-
 			if (lobby != null)
 				await ClientLeaveLobby(lobby.Id);
-
 			SetupHostAndJoinButtons();
 		}
 	}
@@ -415,6 +425,34 @@ public class SampleClientAndHost : MonoBehaviour
 		{
 			Debug.LogWarning($"Ignoring failure for client player {me} to leave lobby {lobbyId}: Got {x.GetType()} with {x.Message}");
 		}
+	}
+
+
+	private async void Search ()
+	{
+		m_rootVE.Clear();
+		var lobbySrv = Unity.Services.Lobbies.LobbyService.Instance;
+		int maxNumResults = 10; // Prevent screen overflow.
+		var response = await lobbySrv.QueryLobbiesAsync(new() { Count = maxNumResults });
+		var results = response.Results;
+		var ve = m_searchResults.Instantiate();
+		var back = ve.Q<Button>("back");
+		back.clicked += SetupHostAndJoinButtons;
+		ve.Q<Label>("count").text = $"{results.Count} result(s)";
+		var rowParent = ve.Q("rows");
+		foreach (var result in results)
+		{
+			string id = result.Id;
+			var row = m_searchResultRow.Instantiate();
+			row.Q<Label>("uuid").text = id;
+			row.Q<Button>("join").clicked += () => DoClient(id);
+			rowParent.Add(row);
+		}
+		m_rootVE.Add(ve);
+		// Focus the first join button if there are any response,
+		// otherwise the back button.
+		var buttonToFocus = results.Any() ? ve.Q<Button>("join") : back;
+
 	}
 	
 

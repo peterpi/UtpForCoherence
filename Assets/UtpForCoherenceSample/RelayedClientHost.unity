@@ -286,6 +286,8 @@ MonoBehaviour:
   m_ui: {fileID: 514518360}
   m_hostOrJoin: {fileID: 9197481963319205126, guid: dd08c1479c3884c4590f5302e65807a6, type: 3}
   m_inGameMenu: {fileID: 9197481963319205126, guid: 88ca222a9da539a41bc76df2d0621508, type: 3}
+  m_searchResults: {fileID: 9197481963319205126, guid: 4cb9ac223bfa0374cbe39cd53271d886, type: 3}
+  m_searchResultRow: {fileID: 9197481963319205126, guid: 28e80d0082c206e4c9d301232808ec53, type: 3}
 --- !u!114 &1575244921
 MonoBehaviour:
   m_ObjectHideFlags: 0

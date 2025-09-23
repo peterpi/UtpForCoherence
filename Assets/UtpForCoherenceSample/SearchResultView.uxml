@@ -1,0 +1,6 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="VisualElement" style="flex-grow: 0; flex-direction: row; height: 32px; justify-content: flex-end;">
+        <ui:Label text="47b922b8-f1a9-4599-bf00-3051ed87748d" name="uuid" style="-unity-text-align: upper-right;" />
+        <ui:Button text="Join" name="join" />
+    </ui:VisualElement>
+</ui:UXML>

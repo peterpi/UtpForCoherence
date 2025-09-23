@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; width: 350px;">
+        <ui:VisualElement name="toolbar" style="flex-grow: 0; flex-direction: column; flex-shrink: 0; justify-content: flex-end; align-items: flex-start;">
+            <ui:Label text="123 result(s)" name="count" />
+            <ui:Button text="Back" name="back" />
+        </ui:VisualElement>
+        <ui:VisualElement name="rows" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

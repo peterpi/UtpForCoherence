@@ -2,5 +2,6 @@
     <ui:VisualElement style="flex-grow: 1; width: 200px;">
         <ui:Button text="Host" name="host" />
         <ui:Button text="Quick Join" name="quickJoin" />
+        <ui:Button text="Search" name="search" />
     </ui:VisualElement>
 </ui:UXML>
